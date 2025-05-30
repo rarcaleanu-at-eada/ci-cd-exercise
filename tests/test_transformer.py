@@ -4,15 +4,9 @@ import pandas as pd
 
 def test_map_binary_column_to_int():
     transformer = ClassSuportTransformer()
-    df = pd.DataFrame(
-        {
-            "Gender": ["Female", "Female", "Female", "Male"]
-        }
-    )
+    df = pd.DataFrame({"Gender": ["Female", "Female", "Female", "Male"]})
 
-    expected_df = pd.DataFrame(
-        {"Gender": [1, 1, 1, 0]}
-    )
+    expected_df = pd.DataFrame({"Gender": [1, 1, 1, 0]})
 
     transformed_df = transformer._map_binary_variables(df)
 
