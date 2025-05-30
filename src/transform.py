@@ -4,6 +4,7 @@ import joblib
 import os
 from metadata import COLUMNS_TO_DROP, BINARY_FEATURES, ONE_HOT_ENCODE_COLUMNS
 
+
 class ClassSuportTransformer:
     def __init__(self):
         self.DROP_COLUMNS = COLUMNS_TO_DROP
@@ -19,20 +20,22 @@ class ClassSuportTransformer:
 
     def _drop_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         return df.drop(self.DROP_COLUMNS, axis=1)
-    
+
     def _map_binary_variables(self, df: pd.DataFrame) -> pd.DataFrame:
         for col in self.BINARY_FEATURES:
-            df[col] = df[col].map({"Female": 1, "Male": 0})        
+            df[col] = df[col].map({"Female": 1, "Male": 0})
         return df
-    
+
     def _one_hot_encoding(self, df: pd.DataFrame) -> pd.DataFrame:
-        encoder_path = 'encoder.pkl'
+        encoder_path = "encoder.pkl"
         encoder_exists = os.path.exists(encoder_path)
 
         if encoder_exists:
             encoder = self._load_encoder()
         else:
-            encoder = OneHotEncoder(drop='first', sparse_output=False).set_output(transform="pandas")
+            encoder = OneHotEncoder(drop="first", sparse_output=False).set_output(
+                transform="pandas"
+            )
             encoder.fit(df[self.ONE_HOT_ENCODE_COLUMNS])
             self._save_encoder(encoder)
 
@@ -43,16 +46,15 @@ class ClassSuportTransformer:
         return df
 
     def _save_encoder(self, encoder) -> None:
-        joblib.dump(encoder, 'encoder.pkl')
+        joblib.dump(encoder, "encoder.pkl")
 
     def _load_encoder(self):
-        return joblib.load('encoder.pkl')
-
+        return joblib.load("encoder.pkl")
 
     def balance_dataset(self, df: pd.DataFrame) -> pd.DataFrame:
         # Separate the classes
-        df_y0 = df[df['Exited'] == 0].copy()
-        df_y1 = df[df['Exited'] == 1].copy()
+        df_y0 = df[df["Exited"] == 0].copy()
+        df_y1 = df[df["Exited"] == 1].copy()
 
         # Find the smaller class size
         min_size = len(df_y1)
@@ -67,4 +69,3 @@ class ClassSuportTransformer:
         df_balanced = df_balanced.sample(frac=1, random_state=42).reset_index(drop=True)
 
         return df_balanced
-
